@@ -3,7 +3,7 @@ import { Application, extend } from "@pixi/react";
 import { Container, Graphics, Sprite, Assets, Texture, Text } from "pixi.js";
 import { Player } from "./Player";
 import { SoundBar } from "./SoundBar";
-import { RoundText } from './RoundText'
+import { RoundText } from "./RoundText";
 import "./App.css";
 
 extend({
@@ -34,43 +34,53 @@ function BackgroundSprite() {
   );
 }
 
+const playerNames = ["Andrew", "Sarah", "Mike", "Emma"];
+
 function App() {
-  const WIDTH = window.innerWidth;
-  const HEIGHT = window.innerHeight;
-  const PLAYER_HEIGHT = HEIGHT * 0.4;
-  const GAP = 0.0765;
+  const [windowSize, setWindowSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+
+  // Calculate scale factors
+  const REF_WIDTH = 1920;
+  const scale = windowSize.width / REF_WIDTH;
+  
+  const playerCount = 4;
+  const playerBarWidth = 314;
+  const playerSpacing = (REF_WIDTH - playerBarWidth * playerCount) / (playerCount + 1);
+  const playerHeight = windowSize.height * 0.4;
+
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
-    <Application width={WIDTH} height={HEIGHT}>
+    <Application width={windowSize.width} height={windowSize.height}>
       <pixiContainer>
         <BackgroundSprite />
         {/* <BunnySprite /> */}
-        <Player
-          playerName="Andrew"
-          avatar="/avatar_1.png"
-          x={WIDTH * GAP * 2}
-          y={PLAYER_HEIGHT}
-        />
-        <Player
-          playerName="Sarah"
-          avatar="/avatar_2.png"
-          x={WIDTH * GAP * 5}
-          y={PLAYER_HEIGHT}
-        />
-        <Player
-          playerName="Mike"
-          avatar="/avatar_3.png"
-          x={WIDTH * GAP * 8}
-          y={PLAYER_HEIGHT}
-        />
-        <Player
-          playerName="Emma"
-          avatar="/avatar_4.png"
-          x={WIDTH * GAP * 11}
-          y={PLAYER_HEIGHT}
-        />
-        <SoundBar />
-        <RoundText />
+        {Array.from({ length: playerCount }).map((_, index) => (
+          <Player
+            key={index}
+            playerName={playerNames[index]}
+            avatar={`/avatar_${index + 1}.png`}
+            x={scale * (playerSpacing * (index + 1) + playerBarWidth * index  + playerBarWidth / 2)}
+            y={playerHeight}  
+            scale={scale}
+          />
+        ))}
+        <SoundBar x={windowSize.width / 2} y={windowSize.height} scale={scale} />
+        <RoundText x={50 * scale} y={50 * scale} scale={scale} roundNumber={1} totalRounds={5} />
       </pixiContainer>
     </Application>
   );

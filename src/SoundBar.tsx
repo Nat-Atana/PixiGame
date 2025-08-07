@@ -2,14 +2,12 @@ import { Assets, Texture, Graphics } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 
 interface SoundBarProps {
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
+  scale: number;
 }
 
-export function SoundBar({
-  x = window.innerWidth / 2,
-  y = window.innerHeight,
-}: SoundBarProps) {
+export function SoundBar({x, y, scale}: SoundBarProps) {
   const containerRef = useRef(null);
   const [soundBarTexture, setSoundBarTexture] = useState(Texture.EMPTY);
   const [barHeights, setBarHeights] = useState<number[]>([]);
@@ -53,6 +51,7 @@ export function SoundBar({
         anchor={{ x: 0.5, y: 1 }}
         x={0}
         y={0}
+        scale={scale}
       />
       
       {/* Timeline bars (drawn graphics) */}
@@ -62,16 +61,16 @@ export function SoundBar({
           
           // Draw multiple timeline bars
           for (let i = 0; i < 20; i++) {
-            const barWidth = 16;
-            const barSpacing = 20;
-            const startX = -187 + (i * barSpacing);
-            const barHeight = barHeights[i] || 25; // Use pre-calculated height or default
-            const startY = -60 - barHeight / 2;
+            const barWidth = 16 * scale;
+            const barSpacing = 20 * scale;
+            const startX = -187 * scale + (i * barSpacing);
+            const barHeight = (barHeights[i] || 25) * scale;
+            const startY = -60 * scale - barHeight / 2;
             
             // Set color based on played state using animated playedIndex
             const barColor = i <= playedIndex ? 0xFFFFFF : 0x1B0A33;
             g.beginFill(barColor);
-            g.drawRoundedRect(startX, startY, barWidth, barHeight, 19);
+            g.drawRoundedRect(startX, startY, barWidth, barHeight, 19 * scale);
             g.endFill();
           }
         }}

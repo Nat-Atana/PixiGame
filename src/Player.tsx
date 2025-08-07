@@ -11,11 +11,12 @@ import {
 interface PlayerProps {
   avatar: string;
   playerName: string;
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
+  scale: number;
 }
 
-export function Player({ avatar, playerName, x, y }: PlayerProps) {
+export function Player({ avatar, playerName, x, y, scale }: PlayerProps) {
   const containerRef = useRef(null)
   const [avatarTexture, setAvatarTexture] = useState(Texture.EMPTY)
   const [baseTexture, setBaseTexture] = useState(Texture.EMPTY)
@@ -51,22 +52,24 @@ export function Player({ avatar, playerName, x, y }: PlayerProps) {
         anchor={{ x: 0.5, y: 0.5 }}
         x={0}
         y={0}
+        scale={scale}
       />
       {/* Player base (bottom layer) */}
       <pixiSprite
         texture={baseTexture}
         anchor={{ x: 0.5, y: 0.5 }}
         x={0}
-        y={156}
+        y={156 * scale}
+        scale={scale}
       />
       {/* Player name text */}
       <pixiText
         text={playerName}
         anchor={{ x: 0.5, y: 0.5 }}
-        x={-54}
-        y={156}
+        x={-54 * scale}
+        y={156 * scale}
         style={{
-          fontSize: 24,
+          fontSize: 24 * scale,
           fill: 0xFFFFFF,
           stroke: 0x000000,
         }}
@@ -75,10 +78,10 @@ export function Player({ avatar, playerName, x, y }: PlayerProps) {
       <pixiText
         text={0}
         anchor={{ x: 0.5, y: 0.5 }}
-        x={84}
-        y={156}
+        x={84 * scale}
+        y={156 * scale}
         style={{
-          fontSize: 24,
+          fontSize: 24 * scale,
           fill: 0xFFFFFF,
           stroke: 0x000000,
         }}
