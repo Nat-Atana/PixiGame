@@ -26,8 +26,8 @@ function BackgroundSprite() {
   return (
     <pixiSprite 
       texture={texture}
-      width={800} 
-      height={600}
+      width={window.innerWidth} 
+      height={window.innerHeight}
       anchor={{ x: 0, y: 0 }}
     />
   );
@@ -37,7 +37,10 @@ function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <Application>
+    <Application
+      width={window.innerWidth}
+      height={window.innerHeight}
+    >
       <pixiContainer>
         <BackgroundSprite />
         <BunnySprite />
