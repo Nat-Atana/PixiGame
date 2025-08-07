@@ -9,10 +9,13 @@ import {
 } from 'react';
 
 interface PlayerProps {
+  avatar: string;
   playerName: string;
+  x?: number;
+  y?: number;
 }
 
-export function Player({ playerName }: PlayerProps) {
+export function Player({ avatar, playerName, x, y }: PlayerProps) {
   const containerRef = useRef(null)
   const [avatarTexture, setAvatarTexture] = useState(Texture.EMPTY)
   const [baseTexture, setBaseTexture] = useState(Texture.EMPTY)
@@ -20,11 +23,7 @@ export function Player({ playerName }: PlayerProps) {
   // Preload the avatar texture
   useEffect(() => {
     if (avatarTexture === Texture.EMPTY) {
-      Assets
-        .load('/Avatar.png')
-        .then((result) => {
-          setAvatarTexture(result)
-        });
+      Assets.load(avatar).then((result) => setAvatarTexture(result));
     }
   }, [avatarTexture]);
 
@@ -42,8 +41,9 @@ export function Player({ playerName }: PlayerProps) {
   return (
     <pixiContainer
       ref={containerRef}
-      x={window.innerWidth / 5}
-      y={window.innerHeight / 3}
+      anchor={{ x: 0.5, y: 0.5 }}
+      x={x}
+      y={y}
     >
       {/* Avatar (top layer) */}
       <pixiSprite
