@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Application, extend } from '@pixi/react';
-import { Container, Graphics, Sprite, Assets, Texture } from 'pixi.js';
+import { Container, Graphics, Sprite, Assets, Texture, Text } from 'pixi.js';
 import { BunnySprite } from './BunnySprite'
+import { Player } from './Player'
 import './App.css'
 
 extend({
   Container,
   Graphics,
   Sprite,
+  Text,
 });
 
 function BackgroundSprite() {
@@ -43,7 +45,8 @@ function App() {
     >
       <pixiContainer>
         <BackgroundSprite />
-        <BunnySprite />
+        {/* <BunnySprite /> */}
+        <Player playerName="Andrew" />
       </pixiContainer>
     </Application>
   )
