@@ -10,11 +10,11 @@ interface RoundTextProps {
 }
 
 export function RoundText({
-  x = 50,
-  y = 50,
-  scale = 1,
-  roundNumber = 1,
-  totalRounds = 5,
+  x,
+  y,
+  scale,
+  roundNumber,
+  totalRounds,
 }: RoundTextProps) {
   const containerRef = useRef(null);
 
@@ -37,7 +37,7 @@ export function RoundText({
         x={10 * scale}
         y={15 * scale}
         style={{
-          fontSize: 18 * scale,
+          fontSize: 20 * scale,
           fill: 0xFFFFFF,
           fontWeight: "bold",
         }}
@@ -47,11 +47,11 @@ export function RoundText({
       <pixiText
         text={`Round ${roundNumber}/${totalRounds}`}
         anchor={{ x: 0, y: 0.5 }}
-        x={165 * scale}
+        x={180 * scale}
         y={15 * scale}
         alpha={0.75}
         style={{
-          fontSize: 18 * scale,
+          fontSize: 20 * scale,
           fill: 0xDEDAF7,
           fontWeight: "bold",
         }}
