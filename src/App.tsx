@@ -34,7 +34,7 @@ function BackgroundSprite() {
   );
 }
 
-const playerNames = ["Andrew", "Sarah", "Mike", "Emma"];
+const playerNames = ["Andrew", "Mary", "Jessica", "Devin"];
 
 function App() {
   const [windowSize, setWindowSize] = useState({
