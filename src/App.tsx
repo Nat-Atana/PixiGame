@@ -3,6 +3,7 @@ import { Application, extend } from "@pixi/react";
 import { Container, Graphics, Sprite, Assets, Texture, Text } from "pixi.js";
 import { Player } from "./Player";
 import { SoundBar } from "./SoundBar";
+import { RoundText } from './RoundText'
 import "./App.css";
 
 extend({
@@ -36,7 +37,7 @@ function BackgroundSprite() {
 function App() {
   const WIDTH = window.innerWidth;
   const HEIGHT = window.innerHeight;
-  const PLAYER_HEIGHT = HEIGHT * 0.3;
+  const PLAYER_HEIGHT = HEIGHT * 0.4;
   const GAP = 0.0765;
 
   return (
@@ -69,6 +70,7 @@ function App() {
           y={PLAYER_HEIGHT}
         />
         <SoundBar />
+        <RoundText />
       </pixiContainer>
     </Application>
   );
