@@ -15,6 +15,8 @@ interface SpeakingAnimationProps {
   nextRingTriggerScale?: number;
   /** Minimum alpha for the faintest ring */
   minAlpha?: number;
+  /** Auto stop animation after N milliseconds. Set 0/undefined to disable. */
+  autoStopAfterMs?: number;
 }
 
 export function SpeakingAnimation({
@@ -25,10 +27,13 @@ export function SpeakingAnimation({
   maxRingScale = 1.7,
   nextRingTriggerScale = 1.2,
   minAlpha = 0.2,
+  autoStopAfterMs = 3000,
 }: SpeakingAnimationProps) {
   const [highlightTexture, setHighlightTexture] = useState(Texture.EMPTY);
   const [ringScales, setRingScales] = useState<number[]>([]);
   const [ringAlphas, setRingAlphas] = useState<number[]>([]);
+  const [isEnded, setIsEnded] = useState(false);
+  const [stopTimerId, setStopTimerId] = useState<number | null>(null);
 
   // Preload texture
   useEffect(() => {
@@ -41,19 +46,36 @@ export function SpeakingAnimation({
     };
   }, []);
 
-  // Reset when toggling active state
+  // Reset when toggling active state and optionally auto stop
   useEffect(() => {
+    // Clear any previous stop timer
+    if (stopTimerId !== null) {
+      clearTimeout(stopTimerId);
+      setStopTimerId(null);
+    }
+
     if (isActive) {
+      setIsEnded(false);
       setRingScales([1]);
       setRingAlphas([1]);
+
+      if (autoStopAfterMs && autoStopAfterMs > 0) {
+        const id = window.setTimeout(() => {
+          setIsEnded(true);
+          setRingScales([]);
+          setRingAlphas([]);
+        }, autoStopAfterMs);
+        setStopTimerId(id);
+      }
     } else {
+      setIsEnded(false);
       setRingScales([]);
       setRingAlphas([]);
     }
-  }, [isActive]);
+  }, [isActive, autoStopAfterMs]);
 
   useTick((options) => {
-    if (!isActive) return;
+    if (!isActive || isEnded) return;
 
     setRingScales((prevScales) => {
       const nextScales: number[] = [];
@@ -87,7 +109,7 @@ export function SpeakingAnimation({
     });
   });
 
-  if (!isActive) return null;
+  if (!isActive || isEnded) return null;
 
   return (
     <>
