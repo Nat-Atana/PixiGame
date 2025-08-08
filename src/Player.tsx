@@ -1,25 +1,27 @@
-import {
-  Assets,
-  Texture,
-} from 'pixi.js';
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { Assets, Texture } from "pixi.js";
+import { useEffect, useRef, useState } from "react";
 
 interface PlayerProps {
   avatar: string;
   playerName: string;
+  isOnline?: boolean;
   x: number;
   y: number;
   scale: number;
 }
 
-export function Player({ avatar, playerName, x, y, scale }: PlayerProps) {
-  const containerRef = useRef(null)
-  const [avatarTexture, setAvatarTexture] = useState(Texture.EMPTY)
-  const [baseTexture, setBaseTexture] = useState(Texture.EMPTY)
+export function Player({
+  avatar,
+  playerName,
+  isOnline = false,
+  x,
+  y,
+  scale,
+}: PlayerProps) {
+  const containerRef = useRef<any>(null);
+  const [avatarTexture, setAvatarTexture] = useState(Texture.EMPTY);
+  const [baseTexture, setBaseTexture] = useState(Texture.EMPTY);
+  const [highlightTexture, setHighlightTexture] = useState(Texture.EMPTY);
 
   // Preload the avatar texture
   useEffect(() => {
@@ -28,24 +30,22 @@ export function Player({ avatar, playerName, x, y, scale }: PlayerProps) {
     }
   }, [avatarTexture]);
 
+  // Preload the highlight texture
+  useEffect(() => {
+    if (highlightTexture === Texture.EMPTY) {
+      Assets.load("/buzz_in_highlight.png").then((result) => setHighlightTexture(result));
+    }
+  }, [highlightTexture]);
+
   // Preload the player base texture
   useEffect(() => {
     if (baseTexture === Texture.EMPTY) {
-      Assets
-        .load('/player_base.png')
-        .then((result) => {
-          setBaseTexture(result)
-        });
+      Assets.load("/player_base.png").then((result) => setBaseTexture(result));
     }
   }, [baseTexture]);
 
   return (
-    <pixiContainer
-      ref={containerRef}
-      anchor={{ x: 0.5, y: 0.5 }}
-      x={x}
-      y={y}
-    >
+    <pixiContainer ref={containerRef} anchor={{ x: 0.5, y: 0.5 }} x={x} y={y}>
       {/* Avatar (top layer) */}
       <pixiSprite
         texture={avatarTexture}
@@ -54,6 +54,16 @@ export function Player({ avatar, playerName, x, y, scale }: PlayerProps) {
         y={0}
         scale={scale}
       />
+      {/* Highlight effect (when online) */}
+      {isOnline && (
+        <pixiSprite
+          texture={highlightTexture}
+          anchor={{ x: 0.5, y: 0.5 }}
+          x={0}
+          y={0}
+          scale={scale}
+        />
+      )}
       {/* Player base (bottom layer) */}
       <pixiSprite
         texture={baseTexture}
@@ -70,7 +80,7 @@ export function Player({ avatar, playerName, x, y, scale }: PlayerProps) {
         y={156 * scale}
         style={{
           fontSize: 24 * scale,
-          fill: 0xFFFFFF,
+          fill: 0xffffff,
           stroke: 0x000000,
         }}
       />
@@ -82,10 +92,10 @@ export function Player({ avatar, playerName, x, y, scale }: PlayerProps) {
         y={156 * scale}
         style={{
           fontSize: 24 * scale,
-          fill: 0xFFFFFF,
+          fill: 0xffffff,
           stroke: 0x000000,
         }}
       />
     </pixiContainer>
   );
-} 
+}

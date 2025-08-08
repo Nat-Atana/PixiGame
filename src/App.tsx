@@ -77,6 +77,7 @@ function App() {
             x={scale * (playerSpacing * (index + 1) + playerBarWidth * index  + playerBarWidth / 2)}
             y={playerHeight}  
             scale={scale}
+            isOnline={index === 2}
           />
         ))}
         <SoundBar x={windowSize.width / 2} y={windowSize.height} scale={scale} />
