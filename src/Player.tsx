@@ -1,5 +1,6 @@
 import { Assets, Texture } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
+import { useTick } from "@pixi/react";
 
 interface PlayerProps {
   avatar: string;
@@ -22,6 +23,16 @@ export function Player({
   const [avatarTexture, setAvatarTexture] = useState(Texture.EMPTY);
   const [baseTexture, setBaseTexture] = useState(Texture.EMPTY);
   const [highlightTexture, setHighlightTexture] = useState(Texture.EMPTY);
+  
+  // Animation state
+  const [floatOffset, setFloatOffset] = useState(Math.random() * Math.PI * 2);
+  const floatSpeed = 0.05; // Speed of the floating animation
+  const floatAmplitude = 10; // How far up and down to float
+
+  // Animation tick
+  useTick(options => {
+    setFloatOffset((prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2));
+  });
 
   // Preload the avatar texture
   useEffect(() => {
@@ -45,7 +56,11 @@ export function Player({
   }, [baseTexture]);
 
   return (
-    <pixiContainer ref={containerRef} anchor={{ x: 0.5, y: 0.5 }} x={x} y={y}>
+    <pixiContainer 
+      ref={containerRef} 
+      anchor={{ x: 0.5, y: 0.5 }} 
+      x={x} 
+      y={y + Math.sin(floatOffset) * floatAmplitude}>
       {/* Avatar (top layer) */}
       <pixiSprite
         texture={avatarTexture}
