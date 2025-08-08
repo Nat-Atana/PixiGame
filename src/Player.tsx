@@ -6,6 +6,7 @@ interface PlayerProps {
   avatar: string;
   playerName: string;
   isOnline?: boolean;
+  isSpeaking?: boolean;
   x: number;
   y: number;
   scale: number;
@@ -15,6 +16,7 @@ export function Player({
   avatar,
   playerName,
   isOnline = false,
+  isSpeaking = false,
   x,
   y,
   scale,
@@ -45,10 +47,10 @@ export function Player({
   // Animation tick
   useTick((options) => {
     // Float animation
-    setFloatOffset((prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2));
+    // setFloatOffset((prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2));
 
     // Buzz highlight animations
-    if (isOnline) {
+    if (isSpeaking) {
       setBuzzScales((prevScales) => {
         const activeScales = [];
         for (const scale of prevScales) {
@@ -183,7 +185,7 @@ export function Player({
         scale={scale}
       />
       {/* Spreading highlight animations */}
-      {isOnline &&
+      {isSpeaking &&
         buzzScales.map((buzzScale, index) => (
           <pixiSprite
             key={`buzz-${index}`}

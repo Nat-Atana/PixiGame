@@ -42,6 +42,8 @@ function App() {
     height: window.innerHeight,
   });
 
+  const [speakingPlayers, setSpeakingPlayers] = useState<number | null>(null);
+
   // Calculate scale factors
   const REF_WIDTH = 1920;
   const scale = windowSize.width / REF_WIDTH;
@@ -60,6 +62,10 @@ function App() {
       });
     };
 
+    setTimeout(() => {
+      setSpeakingPlayers(1);
+    }, 5000);
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -77,7 +83,8 @@ function App() {
             x={scale * (playerSpacing * (index + 1) + playerBarWidth * index  + playerBarWidth / 2)}
             y={playerHeight}  
             scale={scale}
-            isOnline={index === 2}
+            isOnline
+            isSpeaking={speakingPlayers === index}
           />
         ))}
         <SoundBar x={windowSize.width / 2} y={windowSize.height} scale={scale} />
