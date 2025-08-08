@@ -33,34 +33,75 @@ export function Player({
   const floatSpeed = 0.05; // Speed of the floating animation
   const floatAmplitude = 10; // How far up and down to float
 
+  // Buzz highlight animation states
+  const [isAnimating, setIsAnimating] = useState(true);
+  const [buzzScales, setBuzzScales] = useState<number[]>([1]);
+  const [buzzAlphas, setBuzzAlphas] = useState<number[]>([0]);
+  const buzzAnimationSpeed = 0.008;
+  const maxBuzzScale = 1.7;
+  const triggerScale = 1.2; // Scale at which to trigger next circle
+  const minBuzzAlpha = 0.2; // Minimum opacity before reset
+
   // Animation tick
   useTick((options) => {
-    setFloatOffset(
-      (prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2)
-    );
+    // Float animation
+    setFloatOffset((prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2));
+
+    // Buzz highlight animations
+    if (isOnline) {
+      setBuzzScales((prevScales) => {
+        const activeScales = [];
+        for (const scale of prevScales) {
+          const newScale = scale + buzzAnimationSpeed * options.deltaTime;
+          if (newScale < maxBuzzScale) {
+            activeScales.push(newScale);
+          }
+        }
+        if (activeScales.length > 0 && activeScales.length < 3 && activeScales[activeScales.length - 1] >= triggerScale) {
+          activeScales.push(1);
+        }
+
+        if (activeScales.length === 0) {
+          setIsAnimating(false);
+        } else {
+          const newAlphas = [];
+          for (let i = 0; i < activeScales.length; i++) {
+            newAlphas[i] = Math.max(
+              minBuzzAlpha,
+              1 - (activeScales[i] - 1) / (maxBuzzScale - 1)
+            );
+          }
+          setBuzzAlphas(newAlphas);
+        }
+
+        return activeScales;
+      });
+    }
   });
 
   // Preload the textures
   useEffect(() => {
     Assets.load([
       avatar,
+      "/player_base.png",
       "/buzz_in_highlight.png",
       "/jet_trail.png",
       "/player_base_highlight.png",
     ]).then((result) => {
       setAvatarTexture(result[avatar]);
+      setBaseTexture(result["/player_base.png"]);
       setHighlightTexture(result["/buzz_in_highlight.png"]);
       setJetTrailTexture(result["/jet_trail.png"]);
       setBaseHighlightTexture(result["/player_base_highlight.png"]);
     });
   }, []);
 
-  // Preload the player base texture
-  useEffect(() => {
-    if (baseTexture === Texture.EMPTY) {
-      Assets.load("/player_base.png").then((result) => setBaseTexture(result));
-    }
-  }, [baseTexture]);
+  // Handle click on player header
+  const handleClick = () => {
+    setBuzzScales([1]);
+    setBuzzAlphas([1]);
+    setIsAnimating(true);
+  };
 
   return (
     <pixiContainer
@@ -77,7 +118,7 @@ export function Player({
         y={0}
         scale={scale}
       />
-      {/* Highlight effect (when online) */}
+      {/* Static highlight effect */}
       {isOnline && (
         <pixiSprite
           texture={highlightTexture}
@@ -141,6 +182,19 @@ export function Player({
         }}
         scale={scale}
       />
+      {/* Spreading highlight animations */}
+      {isOnline &&
+        buzzScales.map((buzzScale, index) => (
+          <pixiSprite
+            key={`buzz-${index}`}
+            texture={highlightTexture}
+            anchor={{ x: 0.5, y: 0.5 }}
+            x={0}
+            y={0}
+            scale={scale * buzzScale}
+            alpha={buzzAlphas[index]}
+          />
+        ))}
     </pixiContainer>
   );
 }
