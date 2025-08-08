@@ -1,6 +1,7 @@
 import { Assets, Texture } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { useTick } from "@pixi/react";
+import { SpeakingAnimation } from "./SpeakingAnimation";
 
 interface PlayerProps {
   avatar: string;
@@ -36,49 +37,11 @@ export function Player({
   const floatAmplitude = 10; // How far up and down to float
 
   // Buzz highlight animation states
-  const [isAnimating, setIsAnimating] = useState(true);
-  const [buzzScales, setBuzzScales] = useState<number[]>([1]);
-  const [buzzAlphas, setBuzzAlphas] = useState<number[]>([0]);
-  const buzzAnimationSpeed = 0.008;
-  const maxBuzzScale = 1.7;
-  const triggerScale = 1.2; // Scale at which to trigger next circle
-  const minBuzzAlpha = 0.2; // Minimum opacity before reset
 
   // Animation tick
   useTick((options) => {
     // Float animation
-    // setFloatOffset((prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2));
-
-    // Buzz highlight animations
-    if (isSpeaking) {
-      setBuzzScales((prevScales) => {
-        const activeScales = [];
-        for (const scale of prevScales) {
-          const newScale = scale + buzzAnimationSpeed * options.deltaTime;
-          if (newScale < maxBuzzScale) {
-            activeScales.push(newScale);
-          }
-        }
-        if (activeScales.length > 0 && activeScales.length < 3 && activeScales[activeScales.length - 1] >= triggerScale) {
-          activeScales.push(1);
-        }
-
-        if (activeScales.length === 0) {
-          setIsAnimating(false);
-        } else {
-          const newAlphas = [];
-          for (let i = 0; i < activeScales.length; i++) {
-            newAlphas[i] = Math.max(
-              minBuzzAlpha,
-              1 - (activeScales[i] - 1) / (maxBuzzScale - 1)
-            );
-          }
-          setBuzzAlphas(newAlphas);
-        }
-
-        return activeScales;
-      });
-    }
+// setFloatOffset((prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2));
   });
 
   // Preload the textures
@@ -98,12 +61,7 @@ export function Player({
     });
   }, []);
 
-  // Handle click on player header
-  const handleClick = () => {
-    setBuzzScales([1]);
-    setBuzzAlphas([1]);
-    setIsAnimating(true);
-  };
+  // Handle click on player header (reserved for future interactions)
 
   return (
     <pixiContainer
@@ -185,18 +143,7 @@ export function Player({
         scale={scale}
       />
       {/* Spreading highlight animations */}
-      {isSpeaking &&
-        buzzScales.map((buzzScale, index) => (
-          <pixiSprite
-            key={`buzz-${index}`}
-            texture={highlightTexture}
-            anchor={{ x: 0.5, y: 0.5 }}
-            x={0}
-            y={0}
-            scale={scale * buzzScale}
-            alpha={buzzAlphas[index]}
-          />
-        ))}
+      <SpeakingAnimation isActive={isSpeaking} scale={scale} />
     </pixiContainer>
   );
 }
