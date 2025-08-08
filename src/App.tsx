@@ -56,6 +56,7 @@ function App() {
 
   const [speakingPlayers, setSpeakingPlayers] = useState<number | null>(null);
   const [winnerPlayer, setWinnerPlayer] = useState<number | null>(null);
+  const [loserPlayer, setLoserPlayer] = useState<number | null>(null);
 
   // Calculate scale factors
   const REF_WIDTH = 1920;
@@ -81,7 +82,11 @@ function App() {
 
     setTimeout(() => {
       setWinnerPlayer(2);
-    }, 6000);
+    }, 7000);
+
+    setTimeout(() => {
+      setLoserPlayer(3);
+    }, 11000);
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
@@ -123,6 +128,7 @@ function App() {
             isOnline
             isSpeaking={speakingPlayers === index}
             isWinner={winnerPlayer === index}
+            isLooser={loserPlayer === index}
           />
         ))}
         <SoundBar x={windowSize.width / 2} y={windowSize.height} scale={scale} />

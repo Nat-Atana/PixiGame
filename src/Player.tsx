@@ -9,6 +9,7 @@ interface PlayerProps {
   isOnline?: boolean;
   isSpeaking?: boolean;
   isWinner?: boolean;
+  isLooser?: boolean;
   x: number;
   y: number;
   scale: number;
@@ -20,6 +21,7 @@ export function Player({
   isOnline = false,
   isSpeaking = false,
   isWinner = false,
+  isLooser = false,
   x,
   y,
   scale,
@@ -35,9 +37,9 @@ export function Player({
 
   // Animation state
   // const [floatOffset, setFloatOffset] = useState(Math.random() * Math.PI * 2);
-  const floatSpeed = 0.05; // Speed of the floating animation
+  // const floatSpeed = 0.05; // Speed of the floating animation (reserved)
   // const floatAmplitude = 10; // How far up and down to float (reserved)
-  const [winnerRise, setWinnerRise] = useState(0); // Negative value moves up
+  const [yOffset, setYOffset] = useState(0); // Negative moves up, positive moves down
 
   // Buzz highlight animation states
 
@@ -48,25 +50,18 @@ export function Player({
     //   (prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2)
     // );
 
-    // Winner rise animation
-    const riseMax = -140 * scale; // target upward offset
-    const riseSpeed = 2.0 * scale; // pixels per frame at 60fps, scaled
+    // Winner/Looser vertical animation
+    const riseMagnitude = 140 * scale; // pixels
+    const moveSpeed = 2.0 * scale; // pixels per 60fps frame, scaled
+    const target = isWinner ? -riseMagnitude : isLooser ? riseMagnitude : 0;
 
-    setWinnerRise((prev) => {
-      if (isWinner) {
-        if (prev > riseMax) {
-          const next = prev - riseSpeed * options.deltaTime;
-          return next < riseMax ? riseMax : next;
-        }
-        return riseMax;
-      } else {
-        // Ease back down to original position
-        if (prev < 0) {
-          const next = prev + riseSpeed * options.deltaTime;
-          return next > 0 ? 0 : next;
-        }
-        return 0;
-      }
+    setYOffset((prev) => {
+      if (prev === target) return prev;
+      const dir = target > prev ? 1 : -1;
+      const next = prev + dir * moveSpeed * options.deltaTime;
+      // Clamp to target to avoid overshoot
+      if ((dir > 0 && next > target) || (dir < 0 && next < target)) return target;
+      return next;
     });
   });
 
@@ -94,7 +89,7 @@ export function Player({
       ref={containerRef}
       anchor={{ x: 0.5, y: 0.5 }}
       x={x}
-      y={y + winnerRise}
+      y={y + yOffset}
     >
       {/* Avatar (top layer) */}
       <pixiSprite
