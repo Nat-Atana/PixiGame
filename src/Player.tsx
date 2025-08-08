@@ -8,6 +8,7 @@ interface PlayerProps {
   playerName: string;
   isOnline?: boolean;
   isSpeaking?: boolean;
+  isWinner?: boolean;
   x: number;
   y: number;
   scale: number;
@@ -18,6 +19,7 @@ export function Player({
   playerName,
   isOnline = false,
   isSpeaking = false,
+  isWinner = false,
   x,
   y,
   scale,
@@ -32,16 +34,40 @@ export function Player({
   );
 
   // Animation state
-  const [floatOffset, setFloatOffset] = useState(Math.random() * Math.PI * 2);
+  // const [floatOffset, setFloatOffset] = useState(Math.random() * Math.PI * 2);
   const floatSpeed = 0.05; // Speed of the floating animation
-  const floatAmplitude = 10; // How far up and down to float
+  // const floatAmplitude = 10; // How far up and down to float (reserved)
+  const [winnerRise, setWinnerRise] = useState(0); // Negative value moves up
 
   // Buzz highlight animation states
 
   // Animation tick
   useTick((options) => {
-    // Float animation
-// setFloatOffset((prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2));
+    // Keep a subtle idle animation value updated (if needed later)
+    // setFloatOffset(
+    //   (prev) => (prev + floatSpeed * options.deltaTime) % (Math.PI * 2)
+    // );
+
+    // Winner rise animation
+    const riseMax = -140 * scale; // target upward offset
+    const riseSpeed = 2.0 * scale; // pixels per frame at 60fps, scaled
+
+    setWinnerRise((prev) => {
+      if (isWinner) {
+        if (prev > riseMax) {
+          const next = prev - riseSpeed * options.deltaTime;
+          return next < riseMax ? riseMax : next;
+        }
+        return riseMax;
+      } else {
+        // Ease back down to original position
+        if (prev < 0) {
+          const next = prev + riseSpeed * options.deltaTime;
+          return next > 0 ? 0 : next;
+        }
+        return 0;
+      }
+    });
   });
 
   // Preload the textures
@@ -68,7 +94,7 @@ export function Player({
       ref={containerRef}
       anchor={{ x: 0.5, y: 0.5 }}
       x={x}
-      y={y + Math.sin(floatOffset) * floatAmplitude}
+      y={y + winnerRise}
     >
       {/* Avatar (top layer) */}
       <pixiSprite
@@ -89,7 +115,7 @@ export function Player({
         />
       )}
       {/* Jet trail */}
-      {isOnline && (
+      {isWinner && (
         <pixiSprite
           texture={jetTrailTexture}
           anchor={{ x: 0.5, y: 0.5 }}
