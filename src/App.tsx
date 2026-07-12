@@ -92,14 +92,12 @@ function App() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Start background music on first user interaction (required by autoplay policies)
-  useEffect(() => {
+  const startMusic = () => {
     if (musicStarted) return;
-    setTimeout(() => {
-      setMusicStarted(true);
-      playCrowdCheering();
-    }, 500);
-  }, [musicStarted, playCrowdCheering]);
+
+    playCrowdCheering();
+    setMusicStarted(true);
+  };
 
   // Play win cheer when a winner is set
   useEffect(() => {
@@ -113,28 +111,35 @@ function App() {
   }, [winnerPlayer, playWinCheer]);
 
   return (
-     <Application width={windowSize.width} height={windowSize.height}>
-      <pixiContainer>
-        <BackgroundSprite />
-        {/* <BunnySprite /> */}
-        {Array.from({ length: playerCount }).map((_, index) => (
-          <Player
-            key={index}
-            playerName={playerNames[index]}
-            avatar={`/avatar_${index + 1}.png`}
-            x={scale * (playerSpacing * (index + 1) + playerBarWidth * index  + playerBarWidth / 2)}
-            y={playerHeight}  
-            scale={scale}
-            isOnline
-            isSpeaking={speakingPlayers === index}
-            isWinner={winnerPlayer === index}
-            isLooser={loserPlayer === index}
-          />
-        ))}
-        <SoundBar x={windowSize.width / 2} y={windowSize.height} scale={scale} />
-        <RoundText x={50 * scale} y={50 * scale} scale={scale} roundNumber={1} totalRounds={5} />
-      </pixiContainer>
+    <main className="game">
+      {!musicStarted && (
+        <button className="music-button" type="button" onClick={startMusic}>
+          Start music
+        </button>
+      )}
+      <Application width={windowSize.width} height={windowSize.height}>
+        <pixiContainer>
+          <BackgroundSprite />
+          {/* <BunnySprite /> */}
+          {Array.from({ length: playerCount }).map((_, index) => (
+            <Player
+              key={index}
+              playerName={playerNames[index]}
+              avatar={`/avatar_${index + 1}.png`}
+              x={scale * (playerSpacing * (index + 1) + playerBarWidth * index + playerBarWidth / 2)}
+              y={playerHeight}
+              scale={scale}
+              isOnline
+              isSpeaking={speakingPlayers === index}
+              isWinner={winnerPlayer === index}
+              isLooser={loserPlayer === index}
+            />
+          ))}
+          <SoundBar x={windowSize.width / 2} y={windowSize.height} scale={scale} />
+          <RoundText x={50 * scale} y={50 * scale} scale={scale} roundNumber={1} totalRounds={5} />
+        </pixiContainer>
       </Application>
+    </main>
   );
 }
 
