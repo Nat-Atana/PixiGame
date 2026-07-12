@@ -1,4 +1,3 @@
-import { Graphics } from "pixi.js";
 import { useRef } from "react";
 
 interface RoundTextProps {

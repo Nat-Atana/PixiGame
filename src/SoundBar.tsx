@@ -1,4 +1,4 @@
-import { Assets, Texture, Graphics } from "pixi.js";
+import { Assets, Texture } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 
 interface SoundBarProps {

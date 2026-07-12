@@ -7,14 +7,12 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useTick } from '@pixi/react';
 
 export function BunnySprite() {
   // The Pixi.js `Sprite`
   const spriteRef = useRef(null)
 
   const [texture, setTexture] = useState(Texture.EMPTY)
-  const [isHovered, setIsHover] = useState(false)
   const [isActive, setIsActive] = useState(false)
 
   // Preload the sprite if it hasn't been loaded yet
@@ -33,9 +31,7 @@ export function BunnySprite() {
       ref={spriteRef}
       anchor={0.5}
       eventMode={'static'}
-      onClick={(event) => setIsActive(!isActive)}
-      onPointerOver={(event) => setIsHover(true)}
-      onPointerOut={(event) => setIsHover(false)}
+      onClick={() => setIsActive((active) => !active)}
       scale={isActive ? 1 : 1.5}
       texture={texture}
       x={100}
